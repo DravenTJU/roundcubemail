@@ -1,6 +1,20 @@
 // 用于存储悬停开始时间和点击次数
 let hoverStartTime = {};
 let clickCounts = {};
+let userIP = '';
+
+// 获取用户IP地址
+function getUserIP() {
+    fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => {
+            userIP = data.ip;
+            console.log(`用户的IP地址是: ${userIP}`);
+        })
+        .catch(error => {
+            console.error('获取IP地址失败:', error);
+        });
+}
 
 // 初始化链接事件
 function initLinkEvents() {
@@ -10,7 +24,7 @@ function initLinkEvents() {
     // 遍历每个链接并绑定事件
     links.forEach((link, index) => {
         const linkId = `link${index}`; // 为每个链接生成一个唯一的标识符
-        const linkurl=link.href
+        const linkurl = link.href;
         hoverStartTime[linkurl] = 0;
         clickCounts[linkurl] = 0;
 
@@ -31,8 +45,7 @@ function initLinkEvents() {
         });
 
         // 监听点击事件
-        link.addEventListener('click', (event) => {
-            event.preventDefault(); // 阻止默认行为
+        link.addEventListener('click', () => {
             clickCounts[linkurl]++;
             console.log(`链接 ${linkurl} 点击次数: ${clickCounts[linkurl]}`);
             sendDataToServer(linkurl, "click", clickCounts[linkurl]); // 发送点击数据到服务器
@@ -43,7 +56,7 @@ function initLinkEvents() {
 // 发送数据到服务器的函数
 function sendDataToServer(linkurl, eventType, data) {
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "/api/receive_data.php", true); // 假设后端有个 /save-data 的路由
+    xhr.open("POST", "/api/receive_data.php", true); // 假设后端有个 /api/receive_data.php 的路由
     xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
     xhr.onreadystatechange = function () {
@@ -57,11 +70,14 @@ function sendDataToServer(linkurl, eventType, data) {
         linkurl: linkurl,
         eventType: eventType,
         data: data,
+        ip: userIP, // 添加用户IP地址
         timestamp: new Date().toISOString()
     };
 
     xhr.send(JSON.stringify(payload));
 }
 
-// 初始化所有链接
-initLinkEvents();
+document.addEventListener('DOMContentLoaded', function () {
+    getUserIP(); // 页面加载时获取用户IP地址
+    initLinkEvents();
+});
