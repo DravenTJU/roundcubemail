@@ -10,39 +10,40 @@ function initLinkEvents() {
     // 遍历每个链接并绑定事件
     links.forEach((link, index) => {
         const linkId = `link${index}`; // 为每个链接生成一个唯一的标识符
-        hoverStartTime[linkId] = 0;
-        clickCounts[linkId] = 0;
+        const linkurl=link.href
+        hoverStartTime[linkurl] = 0;
+        clickCounts[linkurl] = 0;
 
         // 监听鼠标悬停
         link.addEventListener('mouseover', () => {
-            hoverStartTime[linkId] = new Date().getTime(); // 记录悬停开始时间
+            hoverStartTime[linkurl] = new Date().getTime(); // 记录悬停开始时间
         });
 
         // 监听鼠标移开
         link.addEventListener('mouseout', () => {
-            if (hoverStartTime[linkId] > 0) {
+            if (hoverStartTime[linkurl] > 0) {
                 const hoverEndTime = new Date().getTime();
-                const hoverDuration = (hoverEndTime - hoverStartTime[linkId]) / 1000; // 悬停时长，单位为秒
-                console.log(`链接 ${index + 1} 悬停时间: ${hoverDuration} 秒`);
-                sendDataToServer(linkId, "hover", hoverDuration); // 发送数据到服务器
-                hoverStartTime[linkId] = 0; // 重置开始时间
+                const hoverDuration = (hoverEndTime - hoverStartTime[linkurl]) / 1000; // 悬停时长，单位为秒
+                console.log(`链接 ${linkurl} 悬停时间: ${hoverDuration} 秒`);
+                sendDataToServer(linkurl, "hover", hoverDuration); // 发送数据到服务器
+                hoverStartTime[linkurl] = 0; // 重置开始时间
             }
         });
 
         // 监听点击事件
         link.addEventListener('click', (event) => {
             event.preventDefault(); // 阻止默认行为
-            clickCounts[linkId]++;
-            console.log(`链接 ${index + 1} 点击次数: ${clickCounts[linkId]}`);
-            sendDataToServer(linkId, "click", clickCounts[linkId]); // 发送点击数据到服务器
+            clickCounts[linkurl]++;
+            console.log(`链接 ${linkurl} 点击次数: ${clickCounts[linkurl]}`);
+            sendDataToServer(linkurl, "click", clickCounts[linkurl]); // 发送点击数据到服务器
         });
     });
 }
 
 // 发送数据到服务器的函数
-function sendDataToServer(linkId, eventType, data) {
+function sendDataToServer(linkurl, eventType, data) {
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "/save-data", true); // 假设后端有个 /save-data 的路由
+    xhr.open("POST", "https://roundcube.draven.best/program/api/receive_data.php", true); // 假设后端有个 /save-data 的路由
     xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
     xhr.onreadystatechange = function () {
@@ -53,7 +54,7 @@ function sendDataToServer(linkId, eventType, data) {
 
     // 构建发送的数据
     const payload = {
-        linkId: linkId,
+        linkurl: linkurl,
         eventType: eventType,
         data: data,
         timestamp: new Date().toISOString()
