@@ -43,7 +43,7 @@ function initLinkEvents() {
 // 发送数据到服务器的函数
 function sendDataToServer(linkurl, eventType, data) {
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "https://roundcube.draven.best/program/api/receive_data.php", true); // 假设后端有个 /save-data 的路由
+    xhr.open("POST", "/api/receive_data.php", true); // 假设后端有个 /save-data 的路由
     xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
     xhr.onreadystatechange = function () {
