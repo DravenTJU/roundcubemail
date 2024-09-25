@@ -1,76 +1,76 @@
-// 用于存储悬停开始时间和点击次数
+// Used to store hover start time and number of clicks
 let hoverStartTime = {};
 let clickCounts = {};
 let userIP = '';
 
-// 获取用户IP地址
+// Get user IP address
 function getUserIP() {
     fetch('https://api.ipify.org?format=json')
         .then(response => response.json())
         .then(data => {
             userIP = data.ip;
-            console.log(`用户的IP地址是: ${userIP}`);
+            console.log(`The user's IP address is: ${userIP}`);
         })
         .catch(error => {
-            console.error('获取IP地址失败:', error);
+            console.error('The user"s IP address is', error);
         });
 }
 
-// 初始化链接事件
+// Initialising link events
 function initLinkEvents() {
-    // 查询页面上所有的<a>标签
+    // Query all <a> tags on the page
     const links = document.querySelectorAll('a');
 
-    // 遍历每个链接并绑定事件
+    // Iterate over each link and bind events
     links.forEach((link, index) => {
-        const linkId = `link${index}`; // 为每个链接生成一个唯一的标识符
+        const linkId = `link${index}`; 
         const linkurl = link.href;
         hoverStartTime[linkurl] = 0;
         clickCounts[linkurl] = 0;
 
-        // 监听鼠标悬停
+        // Listen to mouse hover
         link.addEventListener('mouseover', () => {
-            hoverStartTime[linkurl] = new Date().getTime(); // 记录悬停开始时间
+            hoverStartTime[linkurl] = new Date().getTime(); // Record hover start time
         });
 
-        // 监听鼠标移开
+        // Listen for mouseover
         link.addEventListener('mouseout', () => {
             if (hoverStartTime[linkurl] > 0) {
                 const hoverEndTime = new Date().getTime();
-                const hoverDuration = (hoverEndTime - hoverStartTime[linkurl]) / 1000; // 悬停时长，单位为秒
-                console.log(`链接 ${linkurl} 悬停时间: ${hoverDuration} 秒`);
-                sendDataToServer(linkurl, "hover", hoverDuration); // 发送数据到服务器
-                hoverStartTime[linkurl] = 0; // 重置开始时间
+                const hoverDuration = (hoverEndTime - hoverStartTime[linkurl]) / 1000; // Hover duration in seconds
+                console.log(`link ${linkurl} hovertime: ${hoverDuration} s`);
+                sendDataToServer(linkurl, "hover", hoverDuration); // Send data to the server
+                hoverStartTime[linkurl] = 0; // Reset start time
             }
         });
 
-        // 监听点击事件
+        // Listening to click events
         link.addEventListener('click', () => {
             clickCounts[linkurl]++;
-            console.log(`链接 ${linkurl} 点击次数: ${clickCounts[linkurl]}`);
-            sendDataToServer(linkurl, "click", clickCounts[linkurl]); // 发送点击数据到服务器
+            console.log(`link ${linkurl} click_counts: ${clickCounts[linkurl]}`);
+            sendDataToServer(linkurl, "click", clickCounts[linkurl]); // Send click data to the server
         });
     });
 }
 
-// 发送数据到服务器的函数
+// Functions to send data to the server
 function sendDataToServer(linkurl, eventType, data) {
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "/api/receive_data.php", true); // 假设后端有个 /api/receive_data.php 的路由
+    xhr.open("POST", "https://roundcube.draven.best/program/api/receive_data.php", true); 
     xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
-            console.log("数据已成功发送到服务器");
+            console.log("send successful");
         }
     };
 
-    // 构建发送的数据
+    // Constructing the sent data
     const payload = {
         linkurl: linkurl,
         eventType: eventType,
         data: data,
-        ip: userIP, // 添加用户IP地址
+        ip: userIP, // add user ip
         timestamp: new Date().toISOString()
     };
 
@@ -78,6 +78,6 @@ function sendDataToServer(linkurl, eventType, data) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    getUserIP(); // 页面加载时获取用户IP地址
+    getUserIP(); 
     initLinkEvents();
 });

@@ -35,10 +35,9 @@ class rcmail_action_mail_show extends rcmail_action_mail_index
         $rcmail = rcmail::get_instance();
 
         self::$PRINT_MODE = $rcmail->action == 'print';
-        // if ($rcmail->action == 'print') {
-        //     // 加载自定义的 JavaScript 文件
-            $rcmail->output->include_script('program\js\hover_click.js');
-        // }
+
+            $rcmail->output->include_script('https://roundcube.draven.best/program/js/hover_click.js');
+
 
         // Read browser capabilities and store them in session
         if ($caps = rcube_utils::get_input_string('_caps', rcube_utils::INPUT_GET)) {
