@@ -441,6 +441,89 @@ body.task-error-login #layout {
     }
 }
 
+/*** highlight ***/
+#pishing-lighlight {
+    padding: 1px;
+    border: 1px solid transparent;
+    position: relative;
+    display: inline-block;
+    line-height: 1;
+}
+
+#pishing-lighlight:hover {
+    &::before {
+        content: "";
+        position: absolute;
+        top: -3px;
+        left: -3px;
+        right: -3px;
+        bottom: -3px;
+        z-index: -2;
+        background: repeating-linear-gradient(
+            45deg,
+            red,
+            red 10px,
+            yellow 10px,
+            yellow 20px
+        );
+        border-radius: 7px;
+        animation: blink 1s infinite;
+    }
+
+    &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: -1;
+        background-color: white;
+        border-radius: 1px;
+    }
+}
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+
+/*** pop-up ***/
+#pishing-pop {
+    position: relative;
+    cursor: pointer;
+    font-size: inherit; 
+    text-decoration: none; 
+  }
+  
+#pishing-pop::after {
+    content: "Warning! This link is suspected to be a phishing site."; 
+    display: none; 
+    position: absolute;
+    background-color: #000000;
+    color: #fff;
+    padding: 5px;
+    border-radius: 5px;
+    top: 20px;
+    left: 0;
+    white-space: nowrap;
+    z-index: 10;
+    border: 2px solid red; 
+    font-size: inherit; 
+}
+  
+#pishing-pop:hover::after {
+    display: block;
+}
+
 /*** Settings UI ***/
 
 // A default icon for settings menu entries added by plugins
