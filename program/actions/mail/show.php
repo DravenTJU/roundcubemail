@@ -715,6 +715,9 @@ class rcmail_action_mail_show extends rcmail_action_mail_index
                     // Parse the part content for display
                     $body = self::print_body($body, $part, $body_args);
 
+                    // Add phishing detection
+                    $body = self::add_phishing_detection($body);
+
                     // check if the message body is PGP encrypted
                     if (strpos($body, '-----BEGIN PGP MESSAGE-----') !== false) {
                         $rcmail->output->set_env('is_pgp_content', '#' . $container_id);
@@ -890,5 +893,35 @@ class rcmail_action_mail_show extends rcmail_action_mail_index
                 $rcmail->output->set_env('mdn_request', true);
             }
         }
+    }
+
+    /**
+     * Add phishing detection to the message body
+     *
+     * @param string $body The message body
+     *
+     * @return string The modified message body
+     */
+    private static function add_phishing_detection($body)
+    {
+        $dom = new DOMDocument();
+        @$dom->loadHTML(mb_convert_encoding($body, 'HTML-ENTITIES', 'UTF-8'));
+        $xpath = new DOMXPath($dom);
+        $links = $xpath->query('//a');
+
+        foreach ($links as $link) {
+            $href = $link->getAttribute('href');
+            $class = $link->getAttribute('class');
+
+            if (strpos($href, 'canvas.auckland.ac.nz') !== false) {
+                $new_class = $class ? $class . ' phishing-pop' : 'phishing-pop';
+                $link->setAttribute('class', $new_class);
+            } elseif (strpos($href, 'piazza.com') !== false) {
+                $new_class = $class ? $class . ' phishing-highlight' : 'phishing-highlight';
+                $link->setAttribute('class', $new_class);
+            }
+        }
+
+        return $dom->saveHTML();
     }
 }
