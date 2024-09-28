@@ -25,6 +25,16 @@ The code designed to run on a webserver is mainly written in PHP and Javascript.
 It includes a custom framework with an IMAP library derived from [IlohaMail][iloha]
 and requires a set of external libraries (see composer.json and jsdeps.json files).
 
+PHISHING LINK DETECTION
+-----------------------
+We have implemented a phishing link detection system in the email interface.
+
+Features include:
+- Phishing links in emails are automatically highlighted and trigger a pop-up warning.
+- On the backend, we track:
+  - The number of times a user clicks on phishing links.
+  - The time a user hovers over a phishing link.
+  - The user's IP address when interacting with phishing links.
 
 INSTALLATION
 ------------
